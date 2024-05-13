@@ -16,7 +16,7 @@ import org.koin.androidx.compose.koinViewModel
 const val signInRoute: String = "signIn"
 
 fun NavGraphBuilder.signInScreen(
-    onNavigateToTasksList: () -> Unit,
+    onNavigateToHome: () -> Unit,
     onNavigateToSignUp: () -> Unit
 ) {
     composable(signInRoute) {
@@ -27,7 +27,7 @@ fun NavGraphBuilder.signInScreen(
 
         LaunchedEffect(isAuthenticated) {
             if (isAuthenticated) {
-                onNavigateToTasksList()
+                onNavigateToHome()
             }
         }
         SignInScreen(

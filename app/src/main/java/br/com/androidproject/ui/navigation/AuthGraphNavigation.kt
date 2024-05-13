@@ -1,7 +1,6 @@
 package br.com.androidproject.ui.navigation
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.navOptions
 import androidx.navigation.navigation
@@ -19,7 +18,7 @@ fun NavGraphBuilder.authGraph(
     ) {
         signInScreen(
             onNavigateToSignUp = onNavigateToSignUp,
-            onNavigateToTasksList = {
+            onNavigateToHome = {
                 onNavigateToHomeGraph(navOptions {
                     popUpTo(authGraphRoute)
                 })
