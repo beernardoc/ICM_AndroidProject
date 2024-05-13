@@ -1,4 +1,4 @@
-package br.com.alexf.minhastarefas
+package br.com.androidproject
 
 import org.junit.Test
 

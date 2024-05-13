@@ -76,7 +76,7 @@ fun SignInScreen(
         ) {
             Icon(
                 Icons.Filled.Done,
-                contentDescription = "Ícone minhas tarefas",
+                contentDescription = "Icone",
                 Modifier
                     .clip(CircleShape)
                     .size(124.dp)
@@ -85,7 +85,7 @@ fun SignInScreen(
                 tint = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.size(16.dp))
-            Text(text = "Minhas tarefas", style = Typography.titleLarge)
+            Text(text = "Teste", style = Typography.titleLarge)
             Spacer(modifier = Modifier.size(16.dp))
             val textFieldModifier = Modifier
                 .fillMaxWidth(0.8f)
