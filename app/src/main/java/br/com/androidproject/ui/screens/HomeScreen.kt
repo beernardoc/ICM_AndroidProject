@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.androidproject.ui.viewmodels.MapViewModel
 
 class HomeScreenViewModel : ViewModel() {
     var selectedPage by mutableStateOf(Screens.Home.screen)
@@ -47,6 +48,7 @@ class HomeScreenViewModel : ViewModel() {
 fun HomeScreen() {
     val navigatonController = rememberNavController()
     val viewModel: HomeScreenViewModel = viewModel()
+
 
     Scaffold(
         bottomBar = {
@@ -154,7 +156,12 @@ fun HomeScreen() {
             modifier = Modifier.padding(paddingValues)
         )  {
             composable(Screens.Home.screen) {
-                MapScreen()
+                val mapViewModel: MapViewModel = viewModel()
+                MapScreen(
+                    state = mapViewModel.state.value,
+                    setupClusterManager = mapViewModel::setupClusterManager,
+                    calculateZoneViewCenter = mapViewModel::calculateZoneLatLngBounds
+                )
             }
             composable(Screens.History.screen) {
                 HistoryScreen()

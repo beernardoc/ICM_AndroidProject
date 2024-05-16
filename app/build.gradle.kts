@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.ksp)
     alias(libs.plugins.googleServices)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("dagger.hilt.android.plugin")
+    id("kotlin-kapt")
 }
 
 android {
@@ -72,6 +75,26 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+
+    // Need this or MapEffect throws exception.
+    implementation("androidx.appcompat:appcompat:1.5.1")
+
+    // Google maps
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    // Google maps for compose
+    implementation("com.google.maps.android:maps-compose:2.8.0")
+
+    // KTX for the Maps SDK for Android
+    implementation("com.google.maps.android:maps-ktx:3.2.1")
+    // KTX for the Maps SDK for Android Utility Library
+    implementation("com.google.maps.android:maps-utils-ktx:3.2.1")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.42")
+    kapt("com.google.dagger:hilt-compiler:2.42")
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -79,4 +102,7 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+
+
+
 }
