@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1098059993593",
-    "project_id": "icmproject-e81e9",
-    "storage_bucket": "icmproject-e81e9.appspot.com"
+    "project_number": "235759589327",
+    "project_id": "spry-iterator-423613-i0",
+    "storage_bucket": "spry-iterator-423613-i0.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1098059993593:android:5f75a322df0a2c5af1ed28",
+        "mobilesdk_app_id": "1:235759589327:android:1fb31e62dfb0bf9db524ba",
         "android_client_info": {
           "package_name": "br.com.androidproject"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB3Ej3k6Fih3tscWBsiT_d4wH-bdVZCN-o"
+          "current_key": "AIzaSyDepu7mvnTskv3ylufBVd95qkLr0f-2zVk"
         }
       ],
       "services": {
