@@ -27,8 +27,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 
-private const val TAG = "MainActivity"
-
 class MainActivity : ComponentActivity() {
 
 
@@ -64,7 +62,7 @@ class MainActivity : ComponentActivity() {
 
 
         val auth = Firebase.auth
-        Log.i(TAG, "onCreate usuario atual: ${auth.currentUser}")
+        Log.d("MainActivity", "auth: $auth")
 
         setContent {
             AndroidProjectTheme {
@@ -83,8 +81,10 @@ class MainActivity : ComponentActivity() {
                             navController.navigateToSignUp()
                         }
                     )
-                    homeGraph()
-
+                    homeGraph(
+                        fusedLocationProviderClient = fusedLocationProviderClient,
+                        mapViewModel = viewModel
+                    )
                 }
             }
         }
