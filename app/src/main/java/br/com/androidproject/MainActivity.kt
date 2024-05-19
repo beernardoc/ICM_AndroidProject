@@ -1,5 +1,6 @@
 package br.com.androidproject
 
+
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -27,6 +28,7 @@ import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
 
+
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -42,6 +44,7 @@ class MainActivity : ComponentActivity() {
             ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED -> {
             viewModel.getDeviceLocation(fusedLocationProviderClient)
+
         }
         else -> {
             requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
@@ -55,6 +58,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         askPermissions()
+
+
         val auth = Firebase.auth
         Log.d("MainActivity", "auth: $auth")
 
