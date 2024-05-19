@@ -1,5 +1,6 @@
 package br.com.androidproject
 
+
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -19,14 +20,17 @@ import br.com.androidproject.ui.navigation.navigateToSignIn
 import br.com.androidproject.ui.navigation.navigateToSignUp
 import br.com.androidproject.ui.theme.AndroidProjectTheme
 import br.com.androidproject.ui.viewmodels.MapViewModel
+import br.com.androidproject.ui.viewmodels.WeatherViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
+
 private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity() {
+
 
     private val requestPermissionLauncher =
         registerForActivityResult(
@@ -43,6 +47,7 @@ class MainActivity : ComponentActivity() {
             ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED -> {
             viewModel.getDeviceLocation(fusedLocationProviderClient)
+
         }
         else -> {
             requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
@@ -56,6 +61,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         askPermissions()
+
+
         val auth = Firebase.auth
         Log.i(TAG, "onCreate usuario atual: ${auth.currentUser}")
 
