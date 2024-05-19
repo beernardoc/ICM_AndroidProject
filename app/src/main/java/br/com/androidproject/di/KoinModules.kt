@@ -2,6 +2,8 @@ package br.com.androidproject.di
 
 import androidx.room.Room
 import br.com.androidproject.authentication.FirebaseAuthRepository
+import br.com.androidproject.database.AndroidProjectDB
+import br.com.androidproject.repository.RouteRepository
 import br.com.androidproject.ui.viewmodels.SignInViewModel
 import br.com.androidproject.ui.viewmodels.SignUpViewModel
 import br.com.androidproject.ui.viewmodels.MapViewModel
@@ -22,17 +24,18 @@ val storageModule = module {
  //   singleOf(::TasksRepository)
 //    singleOf(::UsersRepository)
     singleOf(::FirebaseAuthRepository)
-/*    single {
+    singleOf(::RouteRepository)
+    single {
         Room.databaseBuilder(
             androidContext(),
-            MinhasTarefasDatabase::class.java, "minhas-tarefas.db"
+            AndroidProjectDB::class.java, "androidproject.db"
         ).build()
     }
     single {
-        get<MinhasTarefasDatabase>().taskDao()
+        get<AndroidProjectDB>().routeDao()
     }
 
- */
+
 }
 val firebaseModule = module {
     single {
