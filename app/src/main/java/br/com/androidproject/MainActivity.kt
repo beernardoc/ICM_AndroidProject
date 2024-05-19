@@ -20,7 +20,6 @@ import br.com.androidproject.ui.navigation.navigateToSignIn
 import br.com.androidproject.ui.navigation.navigateToSignUp
 import br.com.androidproject.ui.theme.AndroidProjectTheme
 import br.com.androidproject.ui.viewmodels.MapViewModel
-import br.com.androidproject.ui.viewmodels.WeatherViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.android.gms.location.FusedLocationProviderClient
