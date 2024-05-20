@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
         ) { isGranted: Boolean ->
             if (isGranted) {
                 viewModel.getDeviceLocation(fusedLocationProviderClient)
+
             }
         }
 
@@ -54,10 +55,13 @@ class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val viewModel: MapViewModel by viewModels()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         askPermissions()
+
+
 
 
         val auth = Firebase.auth
@@ -81,7 +85,6 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                     homeGraph(
-                        fusedLocationProviderClient = fusedLocationProviderClient,
                         mapViewModel = viewModel
                     )
                 }

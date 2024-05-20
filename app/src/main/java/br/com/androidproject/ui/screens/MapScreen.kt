@@ -1,6 +1,5 @@
 package br.com.androidproject.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
@@ -23,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,23 +40,17 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.util.concurrent.TimeUnit
 
 
 @Composable
 fun MapScreen(
-    fusedLocationProviderClient: FusedLocationProviderClient,
     mapViewModel: MapViewModel = viewModel()
 ) {
     val uiState by mapViewModel.uiState.collectAsState()
     val openAlertDialog = remember { mutableStateOf(false) }
 
-    // LaunchedEffect(key1 = uiState.actualLoc) {
-    //     Log.d("MapScreen", "uiState.initialLocation: ${uiState.initialLoc}")
-    // }
-
-    // Set properties using MapProperties which you can use to recompose the map
     val mapProperties = MapProperties(
-        // Only enable if user has accepted location permissions.
         isMyLocationEnabled = uiState.actualLoc != null,
     )
     val cameraPositionState = rememberCameraPositionState()
@@ -79,10 +70,47 @@ fun MapScreen(
                 )
             )
         ) {
-            // Markers and other map elements can be added here
+
         }
 
-        // Add the button at the bottom of the screen
+        // Caixa de informações
+        if (uiState.isRunning){
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Race Information",
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = "Distance: ${uiState.distance} meters",
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Elapsed Time: ${formatElapsedTime(uiState.totalTime)}",
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Pace: ${uiState.pace} min/km",
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Botão de início/parada da corrida
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -90,10 +118,17 @@ fun MapScreen(
         ) {
             val buttonColors =
                 if (uiState.isRunning) ButtonColors(
-                    containerColor = Color(255, 105, 97), contentColor = Color.White, disabledContentColor = Color.Gray, disabledContainerColor = Color.Gray)
-                else
-                    ButtonColors(
-                        containerColor = Color(64,196,99), contentColor = Color.White, disabledContentColor = Color.Gray, disabledContainerColor = Color.Gray)
+                    containerColor = Color(255, 105, 97),
+                    contentColor = Color.White,
+                    disabledContentColor = Color.Gray,
+                    disabledContainerColor = Color.Gray
+                )
+                else ButtonColors(
+                    containerColor = Color(64, 196, 99),
+                    contentColor = Color.White,
+                    disabledContentColor = Color.Gray,
+                    disabledContainerColor = Color.Gray
+                )
             val buttonText = if (uiState.isRunning) "Stop Race" else "Start Race"
             val buttonIcon = if (uiState.isRunning) Icons.Default.Stop else Icons.Default.PlayArrow
             val buttonAction = if (uiState.isRunning) {
@@ -107,8 +142,8 @@ fun MapScreen(
             }
 
             Button(
-                onClick = { buttonAction()},
-                colors =  buttonColors
+                onClick = { buttonAction() },
+                colors = buttonColors
             ) {
                 Icon(
                     imageVector = buttonIcon,
@@ -124,6 +159,7 @@ fun MapScreen(
         }
 
         if (openAlertDialog.value) {
+            mapViewModel.pauseRace()
             Dialog(onDismissRequest = { TODO() }) {
                 // Draw a rectangle shape with rounded corners inside the dialog
                 Card(
@@ -143,7 +179,7 @@ fun MapScreen(
                             text = "Finish the race?",
                             modifier = Modifier.padding(16.dp),
 
-                        )
+                            )
 
                         var title by remember { mutableStateOf("") }
                         TextField(
@@ -152,14 +188,14 @@ fun MapScreen(
                             modifier = Modifier.padding(16.dp),
                             placeholder = { Text("Enter a title for your race") },
 
-                        )
+                            )
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center,
                         ) {
                             TextButton(
-                                onClick = { openAlertDialog.value = false},
+                                onClick = { openAlertDialog.value = false; mapViewModel.restartRace() },
                                 modifier = Modifier.padding(8.dp),
                             ) {
                                 Text("Dismiss")
@@ -175,7 +211,16 @@ fun MapScreen(
                 }
             }
 
-            
+
         }
     }
+}
+
+
+// Função de formatação para o tempo decorrido
+@Composable
+fun formatElapsedTime(elapsedTime: Long): String {
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime)
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60
+    return String.format("%02d:%02d", minutes, seconds)
 }

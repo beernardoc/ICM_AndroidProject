@@ -36,7 +36,6 @@ class HomeScreenViewModel : ViewModel() {
 
 @Composable
 fun HomeScreen(
-    fusedLocationProviderClient: FusedLocationProviderClient,
     mapViewModel: MapViewModel
 ) {
     val navigatonController = rememberNavController()
@@ -150,7 +149,7 @@ fun HomeScreen(
         )  {
             composable(Screens.Home.screen) {
 
-                MapScreen(fusedLocationProviderClient, mapViewModel)
+                MapScreen(mapViewModel)
             }
             composable(Screens.History.screen) {
                 HistoryScreen()

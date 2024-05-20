@@ -13,7 +13,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 const val homeGraphRoute = "homeGraph"
 
 fun NavGraphBuilder.homeGraph(
-    fusedLocationProviderClient: FusedLocationProviderClient,
     mapViewModel: MapViewModel
 ) {
     navigation(
@@ -22,7 +21,6 @@ fun NavGraphBuilder.homeGraph(
     ) {
         composable(Screens.Home.screen) {
             HomeScreen(
-                fusedLocationProviderClient = fusedLocationProviderClient,
                 mapViewModel = mapViewModel
             )
         }
