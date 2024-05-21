@@ -56,28 +56,34 @@ object RetrofitClient {
     }
 }
 
-suspend fun fetchWeather(lat: Double, lon: Double): String? {
+data class WeatherData(
+    val description: String,
+    val temperature: Double,
+    val pressure: Int,
+    val humidity: Int,
+    val windSpeed: Double,
+    val country: String,
+    val cityName: String
+)
+
+suspend fun fetchWeather(lat: Double, lon: Double): WeatherData? {
     val apiKey = "60a8e144d61c18ae08e66dae887be8df"
     return try {
         val response = RetrofitClient.instance.getWeather(lat, lon, apiKey)
-        val weatherDescription = response.weather.firstOrNull()?.description ?: "No description"
-        val temperature = response.main.temp
-        val pressure = response.main.pressure
-        val humidity = response.main.humidity
-        val windSpeed = response.wind.speed
-        val country = response.sys.country
-        val cityName = response.name
-
-        """
-        Weather in $cityName, $country:
-        Temperature: $temperature°C
-        Description: $weatherDescription
-        Pressure: $pressure hPa
-        Humidity: $humidity%
-        Wind Speed: $windSpeed m/s
-        """.trimIndent()
+        val description = response.weather.firstOrNull()?.description ?: "No description"
+        WeatherData(
+            description = description,
+            temperature = response.main.temp,
+            pressure = response.main.pressure,
+            humidity = response.main.humidity,
+            windSpeed = response.wind.speed,
+            country = response.sys.country,
+            cityName = response.name
+        )
     } catch (e: Exception) {
         e.printStackTrace()
         null
     }
 }
+
+

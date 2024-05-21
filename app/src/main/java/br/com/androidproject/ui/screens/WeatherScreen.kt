@@ -3,29 +3,28 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
+import br.com.androidproject.res.getWeatherIcon
+import com.google.android.gms.location.*
 
 @Composable
 fun WeatherScreen() {
     val context = LocalContext.current
     var location by remember { mutableStateOf<Location?>(null) }
-    var weather by remember { mutableStateOf("Loading...") }
+    var weatherData by remember { mutableStateOf<WeatherData?>(null) }
 
     val locationClient = LocationServices.getFusedLocationProviderClient(context)
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -36,7 +35,15 @@ fun WeatherScreen() {
                     location = loc
                 }
             } else {
-                weather = "Permission denied"
+                weatherData = WeatherData(
+                    description = "Permission denied",
+                    temperature = 0.0,
+                    pressure = 0,
+                    humidity = 0,
+                    windSpeed = 0.0,
+                    country = "",
+                    cityName = ""
+                )
             }
         }
     )
@@ -58,18 +65,76 @@ fun WeatherScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .align(Alignment.Center),
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Weather", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+
+            location?.let { loc ->
+                LaunchedEffect(loc) {
+                    val fetchedWeatherData = fetchWeather(loc.latitude, loc.longitude)
+                    weatherData = fetchedWeatherData
+                }
+            }
+
+            weatherData?.let { data ->
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "in ${data.cityName}, ${data.country}", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Image(
+                        painter = painterResource(id = getWeatherIcon(data.description)),
+                        contentDescription = "Weather Icon",
+                        modifier = Modifier.size(128.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = data.description, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        InfoBox("Temperature", "${data.temperature}°C")
+                        InfoBox("Pressure", "${data.pressure} hPa")
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        InfoBox("Humidity", "${data.humidity}%")
+                        InfoBox("Wind Speed", "${data.windSpeed} m/s")
+                    }
+                }
+            }?: run {
+                CircularProgressIndicator(color = Color.Blue)
+            }
+        }
+    }
+}
+
+@Composable
+fun InfoBox(title: String, value: String) {
+    Card(
+        modifier = Modifier
+            .width(150.dp)
+            .padding(8.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Weather", fontSize = 30.sp)
-            location?.let { loc ->
-                LaunchedEffect(loc) {
-                    val weatherData = fetchWeather(loc.latitude, loc.longitude)
-                    weather = weatherData ?: "Error fetching weather"
-                }
-            }
-            Text(text = weather, fontSize = 20.sp)
+            Text(text = title, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = value, fontSize = 18.sp)
         }
     }
 }
