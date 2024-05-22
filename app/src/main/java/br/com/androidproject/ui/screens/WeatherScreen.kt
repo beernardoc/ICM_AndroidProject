@@ -17,8 +17,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import br.com.androidproject.notifications.SunshineNotificationWorker
 import br.com.androidproject.res.getWeatherIcon
 import com.google.android.gms.location.*
+import java.util.concurrent.TimeUnit
+
 
 @Composable
 fun WeatherScreen() {
@@ -59,6 +64,11 @@ fun WeatherScreen() {
                 permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        val workRequest = PeriodicWorkRequestBuilder<SunshineNotificationWorker>(2, TimeUnit.HOURS).build()
+        WorkManager.getInstance(context).enqueue(workRequest)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
