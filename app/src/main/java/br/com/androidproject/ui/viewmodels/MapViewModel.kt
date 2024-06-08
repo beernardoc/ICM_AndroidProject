@@ -70,11 +70,13 @@ class MapViewModel @Inject constructor() : ViewModel() {
 
     @SuppressLint("MissingPermission")
     fun startRace() {
+        fusedLocationClient?.let { getDeviceLocation(it) }
+
         _uiState.update {
             it.copy(
                 isRunning = true,
-                initialLoc = lastLocation,
-                distance = 0f, // Reset distance when starting a new race
+                distance = 0f,
+                initialLoc = it.actualLoc,// Reset distance when starting a new race
                 totalTime = 0L, // Reset elapsed time
                 pace = "" // Reset pace
             )
