@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -55,6 +56,14 @@ fun MapScreen(
     )
     val cameraPositionState = rememberCameraPositionState()
 
+    if (uiState.isRunning) {
+        mapViewModel.showRouteNotification(
+            context = LocalContext.current,
+            distance = uiState.distance,
+            elapsedTime = uiState.totalTime,
+            pace = uiState.pace
+        )
+    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -218,9 +227,11 @@ fun MapScreen(
 
 
 // Função de formatação para o tempo decorrido
+// Função de formatação para o tempo decorrido
 @Composable
 fun formatElapsedTime(elapsedTime: Long): String {
-    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime)
+    val hours = TimeUnit.MILLISECONDS.toHours(elapsedTime)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60
     val seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60
-    return String.format("%02d:%02d", minutes, seconds)
+    return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }

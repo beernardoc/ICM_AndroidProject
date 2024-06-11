@@ -100,6 +100,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.2.2")
 
     implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.2.0")
+
 
 
 
