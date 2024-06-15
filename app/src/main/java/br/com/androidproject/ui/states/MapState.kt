@@ -1,5 +1,6 @@
 package br.com.androidproject.ui.states
 
+import br.com.androidproject.database.entity.Loc
 import com.google.android.gms.maps.model.LatLng
 
 
@@ -12,7 +13,8 @@ data class MapState(
     val totalTime: Long = 0,
     val activeTime: Long = 0,
     val pauseTime: Long = 0,
-    val pace: String = ""
+    val pace: String = "",
+    val points: List<Loc> = emptyList()
 
 
     )

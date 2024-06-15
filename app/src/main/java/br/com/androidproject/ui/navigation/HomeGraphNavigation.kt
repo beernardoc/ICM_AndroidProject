@@ -7,13 +7,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import br.com.androidproject.ui.screens.HomeScreen
 import br.com.androidproject.ui.screens.Screens
+import br.com.androidproject.ui.viewmodels.HistoryViewModel
 import br.com.androidproject.ui.viewmodels.MapViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 
 const val homeGraphRoute = "homeGraph"
 
 fun NavGraphBuilder.homeGraph(
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    historyViewModel: HistoryViewModel
 ) {
     navigation(
         startDestination = Screens.Home.screen,
@@ -21,7 +23,8 @@ fun NavGraphBuilder.homeGraph(
     ) {
         composable(Screens.Home.screen) {
             HomeScreen(
-                mapViewModel = mapViewModel
+                mapViewModel = mapViewModel,
+                historyViewModel = historyViewModel
             )
         }
     }

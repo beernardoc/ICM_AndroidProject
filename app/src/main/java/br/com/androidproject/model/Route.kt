@@ -1,9 +1,11 @@
 package br.com.androidproject.model
 
+import br.com.androidproject.database.entity.Loc
+
 
 data class Route(
 
-    val id: String,
+
     val title: String,
     val startLat: Double,
     val startLng: Double,
@@ -11,6 +13,7 @@ data class Route(
     val endLng: Double,
     val distance: Float,
     val duration: Long,
-    val userId: String
+    val userId: String,
+    val points: List<Loc>
 
 )

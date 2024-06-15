@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.androidproject.ui.viewmodels.HistoryViewModel
 import br.com.androidproject.ui.viewmodels.MapViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 
@@ -36,7 +37,8 @@ class HomeScreenViewModel : ViewModel() {
 
 @Composable
 fun HomeScreen(
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    historyViewModel: HistoryViewModel
 ) {
     val navigatonController = rememberNavController()
     val viewModel: HomeScreenViewModel = viewModel()
@@ -152,7 +154,7 @@ fun HomeScreen(
                 MapScreen(mapViewModel)
             }
             composable(Screens.History.screen) {
-                HistoryScreen()
+                HistoryScreen(historyViewModel)
             }
             composable(Screens.Weather.screen) {
                 WeatherScreen()

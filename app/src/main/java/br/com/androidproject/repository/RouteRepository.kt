@@ -30,12 +30,15 @@ class RouteRepository(
         routeDao.findByUserId(id)
     }
 
+    suspend fun findAll() = withContext(IO) {
+        routeDao.findAll()
+    }
+
 
 
 }
 
 fun Route.toRouteEntity() = RouteEntity(
-    id = this.id,
     title = this.title,
     startLat = this.startLat,
     startLng = this.startLng,
@@ -43,11 +46,11 @@ fun Route.toRouteEntity() = RouteEntity(
     endLng = this.endLng,
     distance = this.distance,
     duration = this.duration,
-    userId = this.userId
+    userId = this.userId,
+    points = this.points
 )
 
 fun RouteEntity.toRoute() = Route(
-    id = this.id,
     title = this.title,
     startLat = this.startLat,
     startLng = this.startLng,
@@ -55,5 +58,6 @@ fun RouteEntity.toRoute() = Route(
     endLng = this.endLng,
     distance = this.distance,
     duration = this.duration,
-    userId = this.userId
+    userId = this.userId,
+    points = this.points
 )

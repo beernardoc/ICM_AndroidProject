@@ -1,15 +1,25 @@
 package br.com.androidproject.ui.viewmodels
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import br.com.androidproject.database.AndroidProjectDB
+import br.com.androidproject.database.dao.RouteDao
+import br.com.androidproject.database.entity.Loc
+import br.com.androidproject.database.entity.RouteEntity
+import br.com.androidproject.model.Route
+import br.com.androidproject.repository.RouteRepository
 import br.com.androidproject.ui.states.MapState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,16 +33,23 @@ import kotlinx.coroutines.launch
 
 
 @HiltViewModel
-class MapViewModel @Inject constructor() : ViewModel() {
+class MapViewModel @Inject constructor(
+    private val routeRepository: RouteRepository
+) : ViewModel() {
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
     private val _uiState = MutableStateFlow(MapState())
     val uiState = _uiState.asStateFlow()
 
+
+
+
+
     private var lastLocation: LatLng? = null
     private var startTime: Long = 0L
     private var timerJob: Job? = null
     private var pauseJob: Job? = null
+
 
     private val locationRequest = LocationRequest.create().apply {
         interval = 5000 // Update location every 5 seconds (adjust as needed)
@@ -58,7 +75,8 @@ class MapViewModel @Inject constructor() : ViewModel() {
                     state.copy(
                         actualLoc = newLocation,
                         distance = updatedDistance,
-                        pace = updatedPace
+                        pace = updatedPace,
+                        points = state.points + Loc(newLocation.latitude, newLocation.longitude)
                     )
                 }
 
@@ -78,7 +96,12 @@ class MapViewModel @Inject constructor() : ViewModel() {
                 distance = 0f,
                 initialLoc = it.actualLoc,// Reset distance when starting a new race
                 totalTime = 0L, // Reset elapsed time
-                pace = "" // Reset pace
+                pace = "", // Reset pace
+                points = if (uiState.value.initialLoc != null) {
+                    it.points + Loc(uiState.value.initialLoc!!.latitude, uiState.value.initialLoc!!.longitude)
+                } else {
+                    it.points
+                }
             )
         }
 
@@ -154,10 +177,34 @@ class MapViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    fun stopRace() {
+    fun stopRace(title: String) {
+
+        val currentUser = Firebase.auth.currentUser
+        Log.d("points", uiState.value.points.toString())
+        val newRoute =Route(
+            title = title,
+            startLat = uiState.value.initialLoc?.latitude ?: 0.0,
+            startLng = uiState.value.initialLoc?.longitude ?: 0.0,
+            endLat = uiState.value.actualLoc?.latitude ?: 0.0,
+            endLng = uiState.value.actualLoc?.longitude ?: 0.0,
+            distance = uiState.value.distance,
+            duration = uiState.value.totalTime,
+            userId = currentUser?.uid ?: "",
+            points = uiState.value.points
+        )
+
+        viewModelScope.launch {
+            routeRepository.save(newRoute)
+            routeRepository.routes.collect {
+                Log.d("MapViewModel", "Routes: $it")
+            }
+        }
+
         _uiState.update {
             it.copy(isRunning = false)
         }
+
+
         timerJob?.cancel()
         timerJob = null
 
@@ -215,4 +262,6 @@ class MapViewModel @Inject constructor() : ViewModel() {
 
         return String.format("%d:%02d", minutes, seconds)
     }
+
+
 }

@@ -4,6 +4,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
 
+data class Loc(
+    val lat: Double,
+    val lng: Double
+)
+
 @Entity
 data class RouteEntity(
     @PrimaryKey
@@ -15,7 +20,8 @@ data class RouteEntity(
     val endLng: Double,
     val distance: Float,
     val duration: Long,
-    val userId: String
+    val userId: String,
+    val points: List<Loc>
 
 
 )

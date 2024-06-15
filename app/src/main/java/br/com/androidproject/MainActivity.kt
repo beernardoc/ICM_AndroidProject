@@ -8,10 +8,12 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import br.com.androidproject.database.AndroidProjectDB
+import br.com.androidproject.database.dao.RouteDao
+import br.com.androidproject.repository.RouteRepository
 import br.com.androidproject.ui.navigation.authGraph
 import br.com.androidproject.ui.navigation.authGraphRoute
 import br.com.androidproject.ui.navigation.homeGraph
@@ -19,6 +21,7 @@ import br.com.androidproject.ui.navigation.navigateToHomeGraph
 import br.com.androidproject.ui.navigation.navigateToSignIn
 import br.com.androidproject.ui.navigation.navigateToSignUp
 import br.com.androidproject.ui.theme.AndroidProjectTheme
+import br.com.androidproject.ui.viewmodels.HistoryViewModel
 import br.com.androidproject.ui.viewmodels.MapViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -53,8 +56,22 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val viewModel: MapViewModel by viewModels()
 
+    private val dao: RouteDao by lazy {
+        AndroidProjectDB.getDatabase(this).routeDao()
+    }
+
+    private val repository: RouteRepository by lazy {
+        RouteRepository(dao)
+    }
+
+    private val viewModel: MapViewModel by lazy {
+        MapViewModel(repository)
+    }
+
+    private val historyViewModel: HistoryViewModel by lazy {
+        HistoryViewModel(repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +102,8 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                     homeGraph(
-                        mapViewModel = viewModel
+                        mapViewModel = viewModel,
+                        historyViewModel = historyViewModel
                     )
                 }
             }

@@ -201,7 +201,7 @@ fun MapScreen(
                                 Text("Dismiss")
                             }
                             TextButton(
-                                onClick = { mapViewModel.stopRace(); openAlertDialog.value = false},
+                                onClick = { mapViewModel.stopRace(title); openAlertDialog.value = false},
                                 modifier = Modifier.padding(8.dp),
                             ) {
                                 Text("Confirm")

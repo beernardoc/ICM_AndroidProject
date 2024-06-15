@@ -4,6 +4,7 @@ import androidx.room.Room
 import br.com.androidproject.authentication.FirebaseAuthRepository
 import br.com.androidproject.database.AndroidProjectDB
 import br.com.androidproject.repository.RouteRepository
+import br.com.androidproject.ui.viewmodels.HistoryViewModel
 import br.com.androidproject.ui.viewmodels.SignInViewModel
 import br.com.androidproject.ui.viewmodels.SignUpViewModel
 import br.com.androidproject.ui.viewmodels.MapViewModel
@@ -18,6 +19,10 @@ val appModule = module {
     viewModelOf(::SignInViewModel)
     viewModelOf(::SignUpViewModel)
     viewModelOf(::MapViewModel)
+    viewModelOf(::HistoryViewModel)
+
+
+
 }
 
 val storageModule = module {
