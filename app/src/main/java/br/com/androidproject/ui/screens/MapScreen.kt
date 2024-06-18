@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 
 import androidx.compose.material3.Icon
@@ -43,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -156,8 +159,7 @@ fun MapScreen(
 
             }
 
-            // Caixa de informações
-            if (uiState.isRunning){
+            if (uiState.isRunning) {
                 Column(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
@@ -165,7 +167,9 @@ fun MapScreen(
                         .fillMaxWidth()
                 ) {
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shadow(8.dp, shape = RoundedCornerShape(8.dp)),
                         shape = RoundedCornerShape(8.dp),
                     ) {
                         Column(
@@ -174,19 +178,23 @@ fun MapScreen(
                         ) {
                             Text(
                                 text = "Race Information",
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                style = MaterialTheme.typography.titleLarge,
                             )
+                            Spacer(modifier = Modifier.height(8.dp)) // Espaçamento entre títulos e conteúdos
                             Text(
                                 text = "Distance: ${uiState.distance} meters",
+                                style = MaterialTheme.typography.bodySmall, // Usa um estilo de corpo para texto secundário
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
                                 text = "Elapsed Time: ${formatElapsedTime(uiState.totalTime)}",
+                                style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
                                 text = "Pace: ${uiState.pace} min/km",
-                                modifier = Modifier.padding(bottom = 4.dp)
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(bottom = 16.dp) // Mais espaço antes do botão para separação visual
                             )
                         }
                     }

@@ -3,14 +3,7 @@ package br.com.androidproject.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,12 +13,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import br.com.androidproject.ui.states.SignInUiState
 import br.com.androidproject.ui.theme.AndroidProjectTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen(
     uiState: SignInUiState,
@@ -45,8 +34,11 @@ fun SignInScreen(
     onSignInClick: () -> Unit,
     onSignUpClick: () -> Unit,
 ) {
-    Column(modifier.fillMaxSize()) {
-
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         val isError = uiState.error != null
         AnimatedVisibility(visible = isError) {
             Box(
@@ -64,7 +56,7 @@ fun SignInScreen(
         }
 
         Column(
-            Modifier
+            modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
@@ -74,19 +66,22 @@ fun SignInScreen(
             Icon(
                 imageVector = Icons.Filled.Person,
                 contentDescription = "Ícone do usuário",
-                Modifier
+                modifier = Modifier
                     .clip(CircleShape)
                     .size(124.dp)
                     .background(MaterialTheme.colorScheme.primary, CircleShape)
-                    .padding(8.dp),
+                    .padding(16.dp),
                 tint = MaterialTheme.colorScheme.onPrimary
             )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(text = "TrackMyRun", style = MaterialTheme.typography.titleLarge, color = Color(0xFF4CAF50))
-            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(24.dp))
+            Text(
+                text = "TrackMyRun",
+                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.primary)
+            )
+            Spacer(modifier = Modifier.size(24.dp))
             val textFieldModifier = Modifier
-                .fillMaxWidth(0.8f)
-                .padding(8.dp)
+                .fillMaxWidth(0.85f)
+                .padding(vertical = 8.dp)
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = uiState.onEmailChange,
@@ -100,7 +95,13 @@ fun SignInScreen(
                 },
                 label = {
                     Text(text = "Email")
-                }
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface
+                )
             )
             OutlinedTextField(
                 value = uiState.password,
@@ -114,47 +115,51 @@ fun SignInScreen(
                     )
                 },
                 label = {
-                    Text("Senha")
+                    Text("Password")
                 },
                 trailingIcon = {
                     val trailingIconModifier = Modifier.clickable {
                         uiState.onTogglePasswordVisibility()
                     }
-                    when (uiState.isShowPassword) {
-                        true -> {
-                            Icon(
-                                imageVector = Icons.Filled.Visibility,
-                                contentDescription = "Ícone de visível",
-                                modifier = trailingIconModifier
-                            )
-                        }
-                        else -> Icon(
+                    if (uiState.isShowPassword) {
+                        Icon(
+                            imageVector = Icons.Filled.Visibility,
+                            contentDescription = "Ícone de visível",
+                            modifier = trailingIconModifier
+                        )
+                    } else {
+                        Icon(
                             imageVector = Icons.Filled.VisibilityOff,
                             contentDescription = "Ícone de não visível",
                             modifier = trailingIconModifier
                         )
                     }
                 },
-                visualTransformation = when (uiState.isShowPassword) {
-                    false -> PasswordVisualTransformation()
-                    true -> VisualTransformation.None
-                }
+                visualTransformation = if (uiState.isShowPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface
+                )
             )
+            Spacer(modifier = Modifier.size(16.dp))
             Button(
                 onClick = onSignInClick,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .padding(8.dp)
+                    .fillMaxWidth(0.85f)
+                    .padding(vertical = 8.dp),
+                shape = RoundedCornerShape(25)
             ) {
                 Text(text = "Entrar")
             }
             TextButton(
                 onClick = onSignUpClick,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .padding(8.dp)
+                    .fillMaxWidth(0.85f)
+                    .padding(vertical = 8.dp)
             ) {
-                Text(text = "Cadastrar")
+                Text(text = "Registar", color = MaterialTheme.colorScheme.primary)
             }
         }
     }
