@@ -1,5 +1,6 @@
 package br.com.androidproject.ui.viewmodels
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -36,6 +37,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import br.com.androidproject.authentication.FirebaseAuthRepository
 import com.google.firebase.auth.FirebaseAuth
 
@@ -296,14 +299,40 @@ class MapViewModel @Inject constructor(
         // Conteúdo da notificação
         val contentText = "Distance: $distance meters\nElapsed Time: $elapsedTime\nPace: $pace min/km"
 
+
+        // Som da notificação
+
+
         // Construir a notificação
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification) // Ícone da notificação (substitua por um ícone adequado)
-            .setContentTitle("Race Information")
+            .setSmallIcon(R.drawable.ic_notification) // Notification icon (replace with a suitable icon)
+            .setContentTitle("Race Information test")
             .setContentText(contentText)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
+            .setPriority(NotificationCompat.PRIORITY_LOW) // Set priority to low to disable sound
+            // use silence_no_sound to disable sound and vibration
+            .setSound(null) // Disable sound
+            .setVibrate(longArrayOf(0L)) // Disable vibration
+            .setAutoCancel(true) // Dismiss the notification when the user taps on it
+            .setOnlyAlertOnce(true) // Only alert the user once
+            .setChannelId(CHANNEL_ID) // Set the channel ID
+            .setOngoing(true) // Makes the notification ongoing (cannot be dismissed by the user)
 
         // Exibir a notificação
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
@@ -313,6 +342,7 @@ class MapViewModel @Inject constructor(
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, channelName, importance).apply {
                 description = "Channel for route notifications"
+                setSound(null, null)
             }
 
             // Registrar o canal de notificação no NotificationManager

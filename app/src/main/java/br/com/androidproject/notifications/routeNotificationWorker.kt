@@ -40,6 +40,7 @@ class RouteNotificationWorker(appContext: Context, workerParams: WorkerParameter
         val notification = NotificationCompat.Builder(context, channelId)
             .setContentTitle("Race Information")
             .setContentText(notificationContent)
+            .setSound(null)
             .setSmallIcon(R.drawable.ic_notification) // Altere para o ícone apropriado
             .build()
 
