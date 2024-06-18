@@ -120,23 +120,6 @@ fun HomeScreen(
 
                 }
 
-                IconButton(
-                    onClick = {
-                        viewModel.selectedPage = Screens.Profile.screen
-                        navigatonController.navigate(Screens.Profile.screen) {
-                            popUpTo(0)
-                        }
-                    },
-                    modifier = Modifier.weight(1f)) {
-
-                    Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = "Profile",
-                        modifier = Modifier.size(24.dp),
-                        tint = if (viewModel.selectedPage == Screens.Profile.screen) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                    )
-
-                }
 
                 IconButton(
                     onClick = {
@@ -186,9 +169,6 @@ fun HomeScreen(
             }
             composable(Screens.Weather.screen) {
                 WeatherScreen()
-            }
-            composable(Screens.Profile.screen) {
-                ProfileScreen()
             }
             composable(Screens.Settings.screen) {
                 SettingsScreen(firebaseAuthRepository = firebaseAuthRepository, navController = navigatonController)

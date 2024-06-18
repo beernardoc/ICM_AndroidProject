@@ -21,7 +21,8 @@ data class RouteEntity(
     val distance: Float,
     val duration: Long,
     val userId: String,
-    val points: List<Loc>
+    val points: List<Loc>,
+    val pace: String
 
 
 )

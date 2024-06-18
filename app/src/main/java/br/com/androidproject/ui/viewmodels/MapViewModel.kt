@@ -208,7 +208,8 @@ class MapViewModel @Inject constructor(
             distance = uiState.value.distance,
             duration = uiState.value.totalTime,
             userId = currentUser?.uid ?: "",
-            points = uiState.value.points
+            points = uiState.value.points,
+            pace = uiState.value.pace
         )
 
         viewModelScope.launch {

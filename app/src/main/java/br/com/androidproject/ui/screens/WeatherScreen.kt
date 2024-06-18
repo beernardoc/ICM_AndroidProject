@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -21,6 +22,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import br.com.androidproject.notifications.SunshineNotificationWorker
 import br.com.androidproject.res.getWeatherIcon
+import br.com.androidproject.ui.screens.TopBar
 import com.google.android.gms.location.*
 import java.util.concurrent.TimeUnit
 
@@ -74,11 +76,11 @@ fun WeatherScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            TopBar(modifier = Modifier.height(56.dp).background(Color(255, 255, 255)))
             Text(text = "Weather", fontSize = 30.sp, fontWeight = FontWeight.Bold)
 
             location?.let { loc ->
