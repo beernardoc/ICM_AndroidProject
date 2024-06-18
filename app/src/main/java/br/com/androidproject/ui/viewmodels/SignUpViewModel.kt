@@ -38,6 +38,9 @@ class SignUpViewModel(
                     _uiState.update {
                         it.copy(confirmPassword = password)
                     }
+                },
+                        onTogglePasswordVisibility = {
+                    _uiState.update { it.copy(passwordVisibility =!it.passwordVisibility) }
                 }
             )
         }
@@ -45,9 +48,15 @@ class SignUpViewModel(
 
     suspend fun signUp() {
         try {
-            val email = uiState.value.email
             val password = uiState.value.password
             val confirmPassword = uiState.value.confirmPassword
+            val emailRegex = """^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$""".toRegex()
+            val email = uiState.value.email.trim()
+
+            if (!emailRegex.matches(email)) {
+                _uiState.update { it.copy(error = "Invalid email format") }
+                return
+            }
 
             if (password != confirmPassword) {
                 _uiState.update {

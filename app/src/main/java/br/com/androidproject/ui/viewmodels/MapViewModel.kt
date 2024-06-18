@@ -27,10 +27,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import android.content.Context
+import br.com.androidproject.authentication.FirebaseAuthRepository
+import com.google.firebase.auth.FirebaseAuth
 
 @HiltViewModel
 class MapViewModel @Inject constructor() : ViewModel() {
     private var fusedLocationClient: FusedLocationProviderClient? = null
+
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    val firebaseAuthRepository = FirebaseAuthRepository(firebaseAuth)
 
     private val _uiState = MutableStateFlow(MapState())
     val uiState = _uiState.asStateFlow()
@@ -274,6 +279,8 @@ class MapViewModel @Inject constructor() : ViewModel() {
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancel(NOTIFICATION_ID)
     }
+
+
 
 
 }

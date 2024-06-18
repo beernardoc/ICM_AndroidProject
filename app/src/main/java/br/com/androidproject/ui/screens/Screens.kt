@@ -15,4 +15,6 @@ sealed class Screens(val screen: String, val icon: ImageVector? = null) {
     data object Weather : Screens("Weather", Icons.Default.SolarPower)
     data object Profile : Screens("Profile", Icons.Default.AccountCircle)
     data object Settings : Screens("Settings", Icons.Default.Settings)
+    data object SignIn : Screens("SignInScreen")
+
 }

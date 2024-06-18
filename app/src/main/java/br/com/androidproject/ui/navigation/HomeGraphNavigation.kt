@@ -21,7 +21,8 @@ fun NavGraphBuilder.homeGraph(
     ) {
         composable(Screens.Home.screen) {
             HomeScreen(
-                mapViewModel = mapViewModel
+                mapViewModel = mapViewModel,
+
             )
         }
     }
