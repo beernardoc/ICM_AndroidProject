@@ -27,6 +27,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class MainActivity : ComponentActivity() {
@@ -57,12 +58,16 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+    private val db: FirebaseFirestore by lazy {
+        FirebaseFirestore.getInstance()
+    }
+
     private val dao: RouteDao by lazy {
         AndroidProjectDB.getDatabase(this).routeDao()
     }
 
     private val repository: RouteRepository by lazy {
-        RouteRepository(dao)
+        RouteRepository(dao, db)
     }
 
     private val viewModel: MapViewModel by lazy {
@@ -81,8 +86,11 @@ class MainActivity : ComponentActivity() {
 
 
 
+
         val auth = Firebase.auth
         Log.d("MainActivity", "auth: $auth")
+
+
 
         setContent {
             AndroidProjectTheme {

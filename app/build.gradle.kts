@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation("com.google.firebase:firebase-firestore")
+
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)

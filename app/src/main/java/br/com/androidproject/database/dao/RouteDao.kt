@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import br.com.androidproject.database.entity.RouteEntity
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,7 +19,7 @@ interface RouteDao {
     fun findById(id: String): Flow<RouteEntity?>
 
     @Query("SELECT * FROM RouteEntity WHERE userId = :id")
-    fun findByUserId(id: String): Flow<RouteEntity?>
+    fun findByUserId(id: String?): Flow<RouteEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(route: RouteEntity)

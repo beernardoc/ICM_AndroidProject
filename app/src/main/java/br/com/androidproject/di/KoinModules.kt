@@ -9,6 +9,7 @@ import br.com.androidproject.ui.viewmodels.SignInViewModel
 import br.com.androidproject.ui.viewmodels.SignUpViewModel
 import br.com.androidproject.ui.viewmodels.MapViewModel
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -38,6 +39,10 @@ val storageModule = module {
     }
     single {
         get<AndroidProjectDB>().routeDao()
+    }
+
+    single {
+        FirebaseFirestore.getInstance()
     }
 
 
