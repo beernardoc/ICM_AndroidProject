@@ -63,7 +63,7 @@ fun HomeScreen(
     Scaffold(
         bottomBar = {
             BottomAppBar(
-                containerColor = Color.Gray,
+                containerColor = Color(166, 9, 165),
             ) {
                 IconButton(
                     onClick = {
@@ -78,7 +78,7 @@ fun HomeScreen(
                         Icons.Default.Home,
                         contentDescription = "Home",
                         modifier = Modifier.size(24.dp),
-                        tint = if (viewModel.selectedPage == Screens.Home.screen) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        tint = if (viewModel.selectedPage == Screens.Home.screen) Color.Black else Color.White
                     )
 
 
@@ -97,7 +97,7 @@ fun HomeScreen(
                         Icons.AutoMirrored.Filled.List,
                         contentDescription = "History",
                         modifier = Modifier.size(24.dp),
-                        tint = if (viewModel.selectedPage == Screens.History.screen) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        tint = if (viewModel.selectedPage == Screens.History.screen) Color.Black else Color.White
                     )
 
                 }
@@ -115,7 +115,7 @@ fun HomeScreen(
                         Icons.Default.LocationOn,
                         contentDescription = "Weather",
                         modifier = Modifier.size(24.dp),
-                        tint = if (viewModel.selectedPage == Screens.Weather.screen)  MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        tint = if (viewModel.selectedPage == Screens.Weather.screen)  Color.Black else Color.White
                     )
 
                 }
@@ -135,7 +135,7 @@ fun HomeScreen(
                         Icons.Default.Settings,
                         contentDescription = "Settings",
                         modifier = Modifier.size(24.dp),
-                        tint = if (viewModel.selectedPage == Screens.Settings.screen)  MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        tint = if (viewModel.selectedPage == Screens.Settings.screen)  Color.Black else Color.White
                     )
 
                 }
@@ -147,7 +147,8 @@ fun HomeScreen(
         NavHost(
             navController = navigatonController,
             startDestination = Screens.Home.screen,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
+
         )  {
             composable(Screens.SignIn.screen) { // dar fix para conseguir mexer no login again
                 SignInScreen(

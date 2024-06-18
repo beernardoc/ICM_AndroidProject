@@ -4,17 +4,14 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ContentResolver
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import br.com.androidproject.database.AndroidProjectDB
-import br.com.androidproject.database.dao.RouteDao
 import br.com.androidproject.database.entity.Loc
-import br.com.androidproject.database.entity.RouteEntity
 import br.com.androidproject.model.Route
 import br.com.androidproject.repository.RouteRepository
 import br.com.androidproject.R
@@ -37,10 +34,16 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import br.com.androidproject.authentication.FirebaseAuthRepository
+import br.com.androidproject.model.Photo
 import com.google.firebase.auth.FirebaseAuth
+import java.io.File
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
@@ -54,6 +57,8 @@ class MapViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MapState())
     val uiState = _uiState.asStateFlow()
 
+    private val _photoUri = MutableStateFlow<Uri?>(null)
+    val photoUri = _photoUri.asStateFlow()
 
 
 
@@ -63,7 +68,7 @@ class MapViewModel @Inject constructor(
     private var timerJob: Job? = null
     private var pauseJob: Job? = null
     private val NOTIFICATION_ID = 123 // Identificador único para a notificação
-    private val CHANNEL_ID = "route_notification_channel" // ID do canal de notificação
+    private val  CHANNEL_ID = "route_notification_channel" // ID do canal de notificação
 
     private val locationRequest = LocationRequest.create().apply {
         interval = 5000 // Update location every 5 seconds (adjust as needed)
@@ -212,7 +217,8 @@ class MapViewModel @Inject constructor(
             duration = uiState.value.totalTime,
             userId = currentUser?.uid ?: "",
             points = uiState.value.points,
-            pace = uiState.value.pace
+            pace = uiState.value.pace,
+            photos = uiState.value.photos
         )
 
         viewModelScope.launch {
@@ -234,6 +240,36 @@ class MapViewModel @Inject constructor(
 
         Log.d("MapViewModel", "stop actualLoc: ${uiState.value.actualLoc}")
         Log.d("MapViewModel", "stop initialLoc: ${uiState.value.initialLoc}")
+    }
+
+    fun takePicture(context: Context,contentResolver: ContentResolver) {
+        val photoFile = File.createTempFile("photo_", ".jpg", context.cacheDir)
+        val photoUri = FileProvider.getUriForFile(context, "${context.packageName}.provider", photoFile)
+        Log.d("MapViewModel", "Photo URI: $photoUri")
+        _photoUri.value = photoUri
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+        }
+
+        intent.resolveActivity(context.packageManager)?.let {
+            context.startActivity(intent)
+        }
+    }
+
+    fun addPhoto(savedUri: Uri){
+
+        if(uiState.value.actualLoc != null){
+            _uiState.update {
+                it.copy(
+                    photos = it.photos + Photo(savedUri.toString(), uiState.value.actualLoc!!.latitude, uiState.value.actualLoc!!.longitude)
+                    )
+            }
+        }
+
+
+
+
     }
 
     @SuppressLint("MissingPermission")

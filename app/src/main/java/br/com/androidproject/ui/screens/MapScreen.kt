@@ -1,6 +1,17 @@
 package br.com.androidproject.ui.screens
 
-import android.provider.CalendarContract.Colors
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
@@ -21,8 +32,6 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -40,15 +49,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.androidproject.ui.viewmodels.MapViewModel
-import com.google.android.gms.location.FusedLocationProviderClient
+import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 
@@ -59,10 +73,53 @@ fun MapScreen(
     val uiState by mapViewModel.uiState.collectAsState()
     val openAlertDialog = remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+    var file = context.createImageFile()
+    val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+    var capturedImageUri by remember {
+        mutableStateOf<Uri?>(Uri.EMPTY)
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
+        if (isTaken) {
+            Log.d("MapScreen", "Foto tirada com sucesso: $uri")
+            // Atualiza o URI da imagem capturada
+            capturedImageUri = uri // Usando Uri.fromFile para obter o URI correto
+
+            Log.d("MapScreen", "capturedImageUri: $capturedImageUri")
+
+            // Salvar a imagem na galeria após captura bem-sucedida
+            val savedUri = saveImageToGallery(context, file)
+            if (savedUri != null) {
+                mapViewModel.addPhoto(savedUri)
+                Log.d("MapScreen", "Imagem salva na galeria: $savedUri")
+            } else {
+                Log.e("MapScreen", "Falha ao salvar imagem na galeria")
+            }
+        }
+    }
+
+
+
+    val permissionLaunch = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        if (it) {
+            Toast.makeText(context, "Permission granted", Toast.LENGTH_SHORT).show()
+            cameraLauncher.launch(uri)
+        }
+        else
+            Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+    }
+
+
+
+
     val mapProperties = MapProperties(
         isMyLocationEnabled = uiState.actualLoc != null,
     )
     val cameraPositionState = rememberCameraPositionState()
+
+
+
 
     if (uiState.isRunning) {
         mapViewModel.showRouteNotification(
@@ -74,7 +131,9 @@ fun MapScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-         TopBar(modifier = Modifier.height(56.dp).background(Color(255, 255, 255)))
+         TopBar(modifier = Modifier
+             .height(56.dp)
+             .background(Color(255, 255, 255)))
 
 
         Box(
@@ -135,7 +194,7 @@ fun MapScreen(
             }
 
             // Botão de início/parada da corrida
-            Column(
+            Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
@@ -180,6 +239,34 @@ fun MapScreen(
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
+
+
+                if(uiState.isRunning){
+                    Button(
+                        modifier = Modifier.padding(start = 8.dp),
+                        onClick = {
+                            val permissionCheckResult = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                                cameraLauncher.launch(uri)
+                            } else {
+                                permissionLaunch.launch(Manifest.permission.CAMERA)
+                            }},
+                        colors = ButtonColors(
+                            containerColor = Color.LightGray,
+                            contentColor = Color.White,
+                            disabledContentColor = Color.Gray,
+                            disabledContainerColor = Color.Gray
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = null,
+                        )
+
+                    }
+                }
+
+
             }
 
             if (openAlertDialog.value) {
@@ -276,5 +363,42 @@ fun TopBar(
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
         )
+    }
+}
+
+
+@SuppressLint("SimpleDateFormat")
+fun Context.createImageFile(): File {
+    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmm").format(Date())
+    val imageFileName = "JPEG_$timeStamp.jpg"
+    val image = File(externalCacheDir, imageFileName)
+    return image
+}
+
+fun saveImageToGallery(context: Context, imageFile: File): Uri? {
+    try {
+        val resolver = context.contentResolver
+        val bitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
+
+        // Salvar a imagem usando MediaStore
+        val imageUrl = MediaStore.Images.Media.insertImage(
+            resolver,
+            bitmap,
+            imageFile.name,
+            "Captured Image"
+        )
+        Log.d("MapScreen", "Imagem com path: ${imageFile.absolutePath}")
+
+        // Excluir o arquivo temporário após salvar na galeria
+        imageFile.delete()
+
+        return if (imageUrl != null) {
+            Uri.parse(imageUrl)
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        Log.e("MapScreen", "Erro ao salvar imagem na galeria: ${e.message}")
+        return null
     }
 }

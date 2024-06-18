@@ -16,9 +16,6 @@ interface PhotoDao {
     @Query("SELECT * FROM PhotoEntity WHERE id = :id")
     fun findById(id: String): Flow<PhotoEntity?>
 
-    @Query("SELECT * FROM PhotoEntity WHERE routeId = :id")
-    fun findByRouteId(id: String): Flow<PhotoEntity?>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(route: PhotoEntity)
 

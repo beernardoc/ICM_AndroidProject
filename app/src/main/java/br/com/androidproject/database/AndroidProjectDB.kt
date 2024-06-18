@@ -13,11 +13,12 @@ import br.com.androidproject.database.entity.Loc
 import br.com.androidproject.database.dao.PhotoDao
 import br.com.androidproject.database.entity.PhotoEntity
 import br.com.androidproject.database.entity.RouteEntity
+import br.com.androidproject.model.Photo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 
-@Database(entities = [RouteEntity::class, PhotoEntity::class], version = 2)
+@Database(entities = [RouteEntity::class, PhotoEntity::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class AndroidProjectDB : RoomDatabase() {
 
@@ -54,6 +55,20 @@ class Converters {
     fun toPointsList(value: String): List<Loc> {
         val gson = Gson()
         val type = object : TypeToken<List<Loc>>() {}.type
+        return gson.fromJson(value, type)
+    }
+
+    @TypeConverter
+    fun fromPhotosList(value: List<Photo>): String {
+        val gson = Gson()
+        val type = object : TypeToken<List<Photo>>() {}.type
+        return gson.toJson(value, type)
+    }
+
+    @TypeConverter
+    fun toPhotosList(value: String): List<Photo> {
+        val gson = Gson()
+        val type = object : TypeToken<List<Photo>>() {}.type
         return gson.fromJson(value, type)
     }
 }

@@ -29,26 +29,19 @@ class PhotoRepository(
         photoDao.findById(id)
     }
 
-    suspend fun findByRouteId(id: String) = withContext(IO) {
-        photoDao.findByRouteId(id)
-    }
 
 
 
 }
 
 fun Photo.toPhotoEntity() = PhotoEntity(
-    id = this.id,
     path = this.path,
     longitude = this.longitude,
     latitude = this.latitude,
-    routeId = this.routeId
 )
 
 fun PhotoEntity.toPhoto() = Photo(
-    id = this.id,
     path = this.path,
     longitude = this.longitude,
     latitude = this.latitude,
-    routeId = this.routeId
 )

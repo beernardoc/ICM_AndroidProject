@@ -2,6 +2,7 @@ package br.com.androidproject.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import br.com.androidproject.model.Photo
 import java.util.UUID
 
 data class Loc(
@@ -22,7 +23,8 @@ data class RouteEntity(
     val duration: Long,
     val userId: String,
     val points: List<Loc>,
-    val pace: String
+    val pace: String,
+    val photos : List<Photo>
 
 
 )

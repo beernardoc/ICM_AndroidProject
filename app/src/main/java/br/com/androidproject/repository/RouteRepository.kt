@@ -36,7 +36,8 @@ class RouteRepository(
                 "duration" to route.duration,
                 "userId" to route.userId,
                 "points" to route.points,
-                "pace" to route.pace
+                "pace" to route.pace,
+                "photos" to route.photos
             )
         )
 
@@ -80,7 +81,8 @@ fun Route.toRouteEntity() = RouteEntity(
     duration = this.duration,
     userId = this.userId,
     points = this.points,
-    pace = this.pace
+    pace = this.pace,
+    photos = this.photos
 )
 
 fun RouteEntity.toRoute() = Route(
@@ -93,5 +95,6 @@ fun RouteEntity.toRoute() = Route(
     duration = this.duration,
     userId = this.userId,
     points = this.points,
-    pace = this.pace
+    pace = this.pace,
+    photos = this.photos
 )

@@ -9,13 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,40 +21,37 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.androidproject.database.entity.RouteEntity
 import br.com.androidproject.ui.viewmodels.HistoryViewModel
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.BitmapDescriptor
+import coil.compose.rememberImagePainter
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.Polyline
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
     historyViewModel: HistoryViewModel = viewModel()
 ) {
-    val routesState = historyViewModel.routes.collectAsState()
+    val routesState by historyViewModel.routes.collectAsState()
+    Log.d("HistoryScreen", "routes: ${routesState}")
 
     Scaffold(
         topBar = {
-            TopBar(modifier = Modifier.height(56.dp).background(Color(255, 255, 255)))
+            TopBar(modifier = Modifier
+                .height(56.dp)
+                .background(Color(255, 255, 255)))
         }
     ) { paddingValues ->
         LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(routesState.value.reversed()) { route -> // Use routesState.value.reversed()
-            RouteCard(route)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(routesState.reversed()) { route -> // Use routesState.reversed()
+                RouteCard(route)
+            }
         }
-    }
     }
 }
 
@@ -76,6 +67,10 @@ fun RouteCard(route: RouteEntity) {
     // State variables to hold addresses
     var startAddress by remember { mutableStateOf("") }
     var endAddress by remember { mutableStateOf("") }
+
+    // State to handle photo dialog
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedPhotoPath by remember { mutableStateOf("") }
 
     fun formatDuration(durationMs: Long): String {
         val seconds = durationMs / 1000
@@ -98,11 +93,9 @@ fun RouteCard(route: RouteEntity) {
 
             if (!startAddresses.isNullOrEmpty()) {
                 startAddress = startAddresses[0]?.getAddressLine(0) ?: ""
-
             }
             if (!endAddresses.isNullOrEmpty()) {
                 endAddress = endAddresses[0]?.getAddressLine(0) ?: ""
-
             }
         }
     }
@@ -122,7 +115,7 @@ fun RouteCard(route: RouteEntity) {
             Text(
                 text = route.title,
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color(0,0,0),
+                color = Color(0, 0, 0),
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -138,10 +131,8 @@ fun RouteCard(route: RouteEntity) {
                         10f,
                         0f
                     )
-
                 )
             ) {
-
                 Marker(
                     state = MarkerState(startLocation),
                     title = "Start Location",
@@ -149,14 +140,26 @@ fun RouteCard(route: RouteEntity) {
                 )
                 Marker(
                     state = MarkerState(endLocation),
-                    title = "End Location",
-
+                    title = "End Location"
                 )
                 val routePoints = route.points.map { point -> LatLng(point.lat, point.lng) }
                 if (routePoints.isNotEmpty()) {
                     Polyline(points = routePoints)
                 }
 
+                route.photos.forEach { photo ->
+                    val photoLocation = LatLng(photo.longitude, photo.latitude)
+                    Marker(
+                        state = MarkerState(photoLocation),
+                        title = "Photo",
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN),
+                        onClick = {
+                            selectedPhotoPath = photo.path
+                            showDialog = true
+                            true
+                        }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -165,7 +168,7 @@ fun RouteCard(route: RouteEntity) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Start Location",
-                    tint = Color( 0,232,0)
+                    tint = Color(0, 232, 0)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -205,11 +208,30 @@ fun RouteCard(route: RouteEntity) {
                 style = MaterialTheme.typography.bodyMedium
             )
 
-
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Dialog to show the photo
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    text = {
+                        Column {
+                            androidx.compose.foundation.Image(
+                                painter = rememberImagePainter(selectedPhotoPath),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showDialog = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
+            }
         }
     }
-
-
 }

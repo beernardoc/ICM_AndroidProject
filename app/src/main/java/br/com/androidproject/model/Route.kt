@@ -16,5 +16,6 @@ data class Route(
     val userId: String,
     val points: List<Loc>,
     val pace: String,
+    val photos : List<Photo>
 
 )
