@@ -1,8 +1,12 @@
 package br.com.androidproject.ui.viewmodels
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,6 +16,7 @@ import br.com.androidproject.database.entity.Loc
 import br.com.androidproject.database.entity.RouteEntity
 import br.com.androidproject.model.Route
 import br.com.androidproject.repository.RouteRepository
+import br.com.androidproject.R
 import br.com.androidproject.ui.states.MapState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -30,13 +35,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+import android.content.Context
+import br.com.androidproject.authentication.FirebaseAuthRepository
+import com.google.firebase.auth.FirebaseAuth
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val routeRepository: RouteRepository
 ) : ViewModel() {
     private var fusedLocationClient: FusedLocationProviderClient? = null
+
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    val firebaseAuthRepository = FirebaseAuthRepository(firebaseAuth)
 
     private val _uiState = MutableStateFlow(MapState())
     val uiState = _uiState.asStateFlow()
@@ -49,7 +59,8 @@ class MapViewModel @Inject constructor(
     private var startTime: Long = 0L
     private var timerJob: Job? = null
     private var pauseJob: Job? = null
-
+    private val NOTIFICATION_ID = 123 // Identificador único para a notificação
+    private val CHANNEL_ID = "route_notification_channel" // ID do canal de notificação
 
     private val locationRequest = LocationRequest.create().apply {
         interval = 5000 // Update location every 5 seconds (adjust as needed)
@@ -90,6 +101,7 @@ class MapViewModel @Inject constructor(
     fun startRace() {
         fusedLocationClient?.let { getDeviceLocation(it) }
 
+
         _uiState.update {
             it.copy(
                 isRunning = true,
@@ -117,6 +129,10 @@ class MapViewModel @Inject constructor(
                 }
             }
         }
+
+
+
+
 
         try {
             fusedLocationClient?.requestLocationUpdates(
@@ -169,6 +185,8 @@ class MapViewModel @Inject constructor(
         pauseJob?.cancel()
         pauseJob = null
 
+
+
         _uiState.update {
             it.copy(isPaused = false)
         }
@@ -207,6 +225,8 @@ class MapViewModel @Inject constructor(
 
         timerJob?.cancel()
         timerJob = null
+
+
 
         Log.d("MapViewModel", "stop actualLoc: ${uiState.value.actualLoc}")
         Log.d("MapViewModel", "stop initialLoc: ${uiState.value.initialLoc}")
@@ -262,6 +282,49 @@ class MapViewModel @Inject constructor(
 
         return String.format("%d:%02d", minutes, seconds)
     }
+
+
+    fun showRouteNotification(context: Context, distance: Float, elapsedTime: Long, pace: String) {
+        val notificationManager = NotificationManagerCompat.from(context)
+
+        // Criar o canal de notificação (apenas necessário a partir do Android Oreo)
+        createNotificationChannel(context)
+
+
+
+        // Conteúdo da notificação
+        val contentText = "Distance: $distance meters\nElapsed Time: $elapsedTime\nPace: $pace min/km"
+
+        // Construir a notificação
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification) // Ícone da notificação (substitua por um ícone adequado)
+            .setContentTitle("Race Information")
+            .setContentText(contentText)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        // Exibir a notificação
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+    }
+
+    private fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "Route Notification Channel"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, channelName, importance).apply {
+                description = "Channel for route notifications"
+            }
+
+            // Registrar o canal de notificação no NotificationManager
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun removeRouteNotification(context: Context) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.cancel(NOTIFICATION_ID)
+    }
+
 
 
 }

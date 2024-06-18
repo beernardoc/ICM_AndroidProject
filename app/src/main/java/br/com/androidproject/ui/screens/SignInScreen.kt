@@ -16,8 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -31,13 +30,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.androidproject.ui.states.SignInUiState
 import br.com.androidproject.ui.theme.AndroidProjectTheme
-import br.com.androidproject.ui.theme.Typography
 
 @Composable
 fun SignInScreen(
@@ -54,16 +53,14 @@ fun SignInScreen(
                 Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.error)
-            ){
+            ) {
                 Text(
                     text = uiState.error ?: "",
-                    style = Typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(8.dp),
                     color = MaterialTheme.colorScheme.onError
                 )
-
             }
-
         }
 
         Column(
@@ -75,8 +72,8 @@ fun SignInScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                Icons.Filled.Done,
-                contentDescription = "Icone",
+                imageVector = Icons.Filled.Person,
+                contentDescription = "Ícone do usuário",
                 Modifier
                     .clip(CircleShape)
                     .size(124.dp)
@@ -85,7 +82,7 @@ fun SignInScreen(
                 tint = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.size(16.dp))
-            Text(text = "Teste", style = Typography.titleLarge)
+            Text(text = "TrackMyRun", style = MaterialTheme.typography.titleLarge, color = Color(0xFF4CAF50))
             Spacer(modifier = Modifier.size(16.dp))
             val textFieldModifier = Modifier
                 .fillMaxWidth(0.8f)
@@ -93,27 +90,27 @@ fun SignInScreen(
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = uiState.onEmailChange,
-                textFieldModifier,
+                modifier = textFieldModifier,
                 shape = RoundedCornerShape(25),
                 leadingIcon = {
                     Icon(
-                        Icons.Filled.Person,
-                        contentDescription = "ícone de usuário"
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "Ícone de usuário"
                     )
                 },
                 label = {
-                    Text(text = "Usuário")
+                    Text(text = "Email")
                 }
             )
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = uiState.onPasswordChange,
-                textFieldModifier,
+                modifier = textFieldModifier,
                 shape = RoundedCornerShape(25),
                 leadingIcon = {
                     Icon(
-                        Icons.Filled.Password,
-                        contentDescription = "ícone de usuário"
+                        imageVector = Icons.Filled.Lock,
+                        contentDescription = "Ícone de senha"
                     )
                 },
                 label = {
@@ -126,16 +123,15 @@ fun SignInScreen(
                     when (uiState.isShowPassword) {
                         true -> {
                             Icon(
-                                Icons.Filled.Visibility,
-                                contentDescription = "ícone de visível",
-                                trailingIconModifier
+                                imageVector = Icons.Filled.Visibility,
+                                contentDescription = "Ícone de visível",
+                                modifier = trailingIconModifier
                             )
                         }
-
                         else -> Icon(
-                            Icons.Filled.VisibilityOff,
-                            contentDescription = "ícone de não visível",
-                            trailingIconModifier
+                            imageVector = Icons.Filled.VisibilityOff,
+                            contentDescription = "Ícone de não visível",
+                            modifier = trailingIconModifier
                         )
                     }
                 },
@@ -146,7 +142,7 @@ fun SignInScreen(
             )
             Button(
                 onClick = onSignInClick,
-                Modifier
+                modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .padding(8.dp)
             ) {
@@ -154,7 +150,7 @@ fun SignInScreen(
             }
             TextButton(
                 onClick = onSignUpClick,
-                Modifier
+                modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .padding(8.dp)
             ) {
