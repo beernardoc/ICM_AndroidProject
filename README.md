@@ -20,11 +20,16 @@ João Santos - 110555 (50%)
 
 [Demo](demo/demo.mp4)
 
+### Report
+
+[Report](report/ICM%20Report%20-%20Track%20My%20Run.docx)
+
 ### Screenshots
 
 | Home                          | Running                            | History                             | PHOTOS                           | Weather                             |
 |-------------------------------|------------------------------------|-------------------------------------|----------------------------------|-------------------------------------|
 | ![Home](screenshots/home.png) | ![Running](screenshots/runing.png) | ![History](screenshots/history.png) | ![Photos](screenshots/photo.png) | ![Weather](screenshots/weather.png) |
+
 
 ## Features
 
