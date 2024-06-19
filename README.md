@@ -16,13 +16,15 @@ João Santos - 110555 (50%)
 
 [Download APK](app/app-debug.apk)
 
-### Demo
+### Video Demo
+
+[Demo](demo/demo.mp4)
 
 ### Screenshots
 
-| Home                          | Running                            | History                             | PHOTOS                           | Weather                      |     |
-|-------------------------------|------------------------------------|-------------------------------------|----------------------------------|------------------------------|-----|
-| ![Home](screenshots/home.png) | ![Running](screenshots/runing.png) | ![History](screenshots/history.png) | ![Photos](screenshots/photo.png) | ![Weather](demo/weather.jpg) |     |
+| Home                          | Running                            | History                             | PHOTOS                           | Weather                             |
+|-------------------------------|------------------------------------|-------------------------------------|----------------------------------|-------------------------------------|
+| ![Home](screenshots/home.png) | ![Running](screenshots/runing.png) | ![History](screenshots/history.png) | ![Photos](screenshots/photo.png) | ![Weather](screenshots/weather.png) |
 
 ## Features
 
