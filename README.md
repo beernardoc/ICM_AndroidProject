@@ -30,8 +30,12 @@ João Santos - 110555 (50%)
 |-------------------------------|------------------------------------|-------------------------------------|----------------------------------|-------------------------------------|
 | ![Home](screenshots/home.png) | ![Running](screenshots/runing.png) | ![History](screenshots/history.png) | ![Photos](screenshots/photo.png) | ![Weather](screenshots/weather.png) |
 
+### Authentication
 
-## Features
+- User: newuser@ua.pt
+- Password: 1234567
+
+### Features
 
 -  **Track your runs**: Track your runs and save them in the app.
 -  **Map**:  Users can view their route on an interactive map directly within the application.
