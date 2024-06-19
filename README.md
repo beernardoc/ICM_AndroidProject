@@ -8,9 +8,9 @@ With TrackMyRun, each run becomes a unique and exciting experience.
 
 ##
 
-Bernardo Pinto - 1005926 (50%)
+Bernardo Pinto - 1005926 (60%)
 
-João Santos - 110555 (50%)
+João Santos - 110555 (40%)
 
 ## APK
 
