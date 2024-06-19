@@ -63,7 +63,7 @@ fun HomeScreen(
     Scaffold(
         bottomBar = {
             BottomAppBar(
-                containerColor = Color(166, 9, 165),
+                containerColor = Color(211,211,211),
             ) {
                 IconButton(
                     onClick = {

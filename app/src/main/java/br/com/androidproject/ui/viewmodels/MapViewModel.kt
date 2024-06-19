@@ -117,11 +117,9 @@ class MapViewModel @Inject constructor(
                 initialLoc = it.actualLoc,// Reset distance when starting a new race
                 totalTime = 0L, // Reset elapsed time
                 pace = "", // Reset pace
-                points = if (uiState.value.initialLoc != null) {
-                    it.points + Loc(uiState.value.initialLoc!!.latitude, uiState.value.initialLoc!!.longitude)
-                } else {
-                    it.points
-                }
+                points = emptyList(),
+                photos = emptyList()
+
             )
         }
 
@@ -242,20 +240,7 @@ class MapViewModel @Inject constructor(
         Log.d("MapViewModel", "stop initialLoc: ${uiState.value.initialLoc}")
     }
 
-    fun takePicture(context: Context,contentResolver: ContentResolver) {
-        val photoFile = File.createTempFile("photo_", ".jpg", context.cacheDir)
-        val photoUri = FileProvider.getUriForFile(context, "${context.packageName}.provider", photoFile)
-        Log.d("MapViewModel", "Photo URI: $photoUri")
-        _photoUri.value = photoUri
 
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-        }
-
-        intent.resolveActivity(context.packageManager)?.let {
-            context.startActivity(intent)
-        }
-    }
 
     fun addPhoto(savedUri: Uri){
 
